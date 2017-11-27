@@ -14,6 +14,9 @@ const data = require('./data/chaingear.json');
 const app = express();
 app.use('/logos', express.static('logos'));
 app.get('/api/tokens', (req, res) => {
+	var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+	console.log(' fullUrl ', fullUrl);
+	
 	const top = data.filter(item => item.ratings && item.ratings.rating_cyber > 0);
 	res.json(top);
 });
