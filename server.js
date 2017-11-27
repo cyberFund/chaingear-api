@@ -12,6 +12,7 @@ const data = require('./data/chaingear.json');
 
 // App
 const app = express();
+app.use('/logos', express.static('logos'));
 app.get('/api/tokens', (req, res) => {
 	const top = data.filter(item => item.ratings && item.ratings.rating_cyber > 0);
 	res.json(top);
