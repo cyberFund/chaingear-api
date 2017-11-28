@@ -21,12 +21,14 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.get('/api/crowdsales', (req, res) => {
+	let crowdsales = data.filter(system => !!system.crowdsales );
+	res.json(crowdsales);
+});
+
 app.get('/api/tokens', (req, res) => {
-	var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-	console.log(' fullUrl ', fullUrl);
-	
-	const top = data.filter(item => item.ratings && item.ratings.rating_cyber > 0);
-	res.json(top);
+	let projects = data.filter(system => !system.crowdsales && (system.descriptions && system.descriptions.system_type !== "fiat" ));
+	res.json(projects);
 });
 
 app.listen(PORT, HOST);
