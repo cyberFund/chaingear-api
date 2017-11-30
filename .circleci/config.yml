@@ -1,0 +1,43 @@
+version: 2
+
+
+defaults:
+
+  container: &default_container
+    working_directory: ~/build
+    docker:
+      - image: circleci/openjdk:8-jdk
+
+  release_filter: &release_filter
+    filters:
+      tags:
+        only: /^release-.*/
+      branches:
+        ignore: /.*/
+
+
+jobs:
+
+  deploy_chaingear-api:
+     <<: *default_container
+     steps:
+       - checkout
+       - setup_remote_docker:
+           version: 17.05.0-ce
+       - run:
+           name: Deploy cui-browser docker image
+           command: |
+             docker build -t cybernode/chaingear-api -f devops/Dockerfile ./
+             docker login -u $DOCKER_USER -p $DOCKER_PASS
+             docker tag build/chaingear-api cybernode/chaingear-api:$CIRCLE_TAG
+             docker push cybernode/chaingear-api:$CIRCLE_TAG
+             docker tag build/chaingear-api cybernode/chaingear-api:latest
+             docker push cybernode/chaingear-api:latest
+
+workflows:
+  version: 2
+
+  ui_build:
+    jobs:
+      - deploy_chaingear-api:
+          <<: *release_filter
