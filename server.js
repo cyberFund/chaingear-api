@@ -21,10 +21,22 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.get('/api/crowdsales/:system', (req, res) => {
+	let crowdsales = data.find(system => req.params.system);
+	res.json(crowdsales);
+});
+
 app.get('/api/crowdsales', (req, res) => {
 	let crowdsales = data.filter(system => !!system.crowdsales );
 	res.json(crowdsales);
 });
+
+
+app.get('/api/tokens/:system', (req, res) => {
+	let projects = data.find(system => req.params.system);
+	res.json(projects);
+});
+
 
 app.get('/api/tokens', (req, res) => {
 	let projects = data.filter(system => !system.crowdsales && (system.descriptions && system.descriptions.system_type !== "fiat" ));
