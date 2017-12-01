@@ -22,7 +22,7 @@ app.use(function(req, res, next) {
 });
 
 app.get('/api/crowdsales/:system', (req, res) => {
-	let crowdsales = data.find(system => req.params.system);
+	let crowdsales = data.find(system => system.system == req.params.system);
 	res.json(crowdsales);
 });
 
@@ -33,7 +33,7 @@ app.get('/api/crowdsales', (req, res) => {
 
 
 app.get('/api/tokens/:system', (req, res) => {
-	let projects = data.find(system => req.params.system);
+	let projects = data.find(system => system.system ==req.params.system);
 	res.json(projects);
 });
 
