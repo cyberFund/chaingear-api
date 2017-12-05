@@ -27,7 +27,7 @@ jobs:
        - run:
            name: Deploy cui-browser docker image
            command: |
-             docker build -t cybernode/chaingear-api -f devops/Dockerfile ./
+             docker build -t build/chaingear-api -f devops/Dockerfile ./
              docker login -u $DOCKER_USER -p $DOCKER_PASS
              docker tag build/chaingear-api cybernode/chaingear-api:$CIRCLE_TAG
              docker push cybernode/chaingear-api:$CIRCLE_TAG
