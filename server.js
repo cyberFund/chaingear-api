@@ -39,7 +39,7 @@ app.get('/api/tokens/:system', (req, res) => {
 
 
 app.get('/api/tokens', (req, res) => {
-	let projects = data.filter(system => !system.crowdsales && (system.descriptions && system.descriptions.system_type !== "fiat" ));
+	let projects = data.filter(system => (system.descriptions && system.descriptions.system_type !== "fiat" ));
 	res.json(projects);
 });
 
