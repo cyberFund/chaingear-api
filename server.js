@@ -32,8 +32,8 @@ app.get('/api/crowdsales', (req, res) => {
 });
 
 
-app.get('/api/tokens/:system', (req, res) => {
-	let projects = data.find(system => system.system ==req.params.system);
+app.get('/api/tokens/:symbol', (req, res) => {
+	let projects = data.find(system => system.token.symbol ==req.params.symbol);
 	res.json(projects);
 });
 
