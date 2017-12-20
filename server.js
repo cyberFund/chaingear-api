@@ -33,7 +33,7 @@ app.get('/api/crowdsales', (req, res) => {
 
 
 app.get('/api/tokens/:symbol', (req, res) => {
-	let projects = data.find(system => system.token.symbol ==req.params.symbol);
+	let projects = data.find(system => system.token && system.token.symbol ==req.params.symbol);
 	res.json(projects);
 });
 
