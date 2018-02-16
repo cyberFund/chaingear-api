@@ -1,43 +1,61 @@
 version: 2
 
-
-defaults:
-
-  container: &default_container
-    working_directory: ~/build
-    docker:
-      - image: circleci/openjdk:8-jdk
-
-  release_filter: &release_filter
-    filters:
-      tags:
-        only: /^release-.*/
-      branches:
-        ignore: /.*/
-
+aliases:
+ # build and deploy for all tags AND commits in master
+ - &staging_filter
+     filters:
+       tags:
+         only: /.*/
+       branches:
+         only: master
 
 jobs:
 
-  deploy_chaingear-api:
-     <<: *default_container
+  build_and_push_staging_image:
+     working_directory: ~/build
+     docker:
+       - image: docker:17.05.0-ce-git
      steps:
        - checkout
-       - setup_remote_docker:
-           version: 17.05.0-ce
+       - setup_remote_docker
        - run:
-           name: Deploy cui-browser docker image
+           name: Build docker image
            command: |
-             docker build -t build/chaingear-api -f devops/Dockerfile ./
+             docker build -t build/chaingear-api -f ./devops/Dockerfile ./
+       - deploy:
+           name: Uploading images to DockerHub
+           command: |
+             echo Uploading :latest image
              docker login -u $DOCKER_USER -p $DOCKER_PASS
-             docker tag build/chaingear-api cybernode/chaingear-api:$CIRCLE_TAG
-             docker push cybernode/chaingear-api:$CIRCLE_TAG
              docker tag build/chaingear-api cybernode/chaingear-api:latest
              docker push cybernode/chaingear-api:latest
+             if [[ "$CIRCLE_TAG" != "" ]]; then
+                # $CIRCLE_TAG is only set when building tags
+                echo Uploading :$CIRCLE_TAG image
+                docker tag build/chaingear-api cybernode/chaingear-api:$CIRCLE_TAG
+                docker push cybernode/chaingear-api:$CIRCLE_TAG
+             fi
+
+  deploy_stagin_image:
+    working_directory: ~/build
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - run:
+          name: Run new version of chaingear-api on staging
+          command: >-
+            ssh mars@staging.cyber.fund -p 33322 -o "StrictHostKeyChecking no"
+            'cd /cyberdata/cybernode && git pull && sh /cyberdata/cybernode/up.chaingear.sh'
+
+
 
 workflows:
   version: 2
-
-  ui_build:
+  staging_cd:
     jobs:
-      - deploy_chaingear-api:
-          <<: *release_filter
+      - build_and_push_staging_image:
+          <<: *staging_filter
+      - deploy_stagin_image:
+          <<: *staging_filter
+          requires:
+            - build_and_push_staging_image
