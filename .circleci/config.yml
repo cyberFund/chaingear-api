@@ -45,7 +45,7 @@ jobs:
           name: Run new version of chaingear-api on staging
           command: >-
             ssh mars@staging.cyber.fund -p 33322 -o "StrictHostKeyChecking no"
-            'cd /cyberdata/cybernode && git pull && sh /cyberdata/cybernode/up.chaingear.sh'
+            'cd /cyberdata/cybernode && git pull && sh /cyberdata/cybernode/up.chaingear-api.sh'
 
 
 
